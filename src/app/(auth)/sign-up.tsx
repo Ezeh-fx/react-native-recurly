@@ -1,17 +1,17 @@
 import {
-  AuthBrand,
-  AuthButton,
-  AuthField,
-  AuthFormError,
-  AuthShell,
-  PasswordToggle,
+    AuthBrand,
+    AuthButton,
+    AuthField,
+    AuthFormError,
+    AuthShell,
+    PasswordToggle,
 } from "@/components/auth";
 import {
-  getAuthError,
-  validateCode,
-  validateConfirmation,
-  validateEmail,
-  validatePassword,
+    getAuthError,
+    validateCode,
+    validateConfirmation,
+    validateEmail,
+    validatePassword,
 } from "@/lib/auth";
 import { useClerk, useSignUp } from "@clerk/expo";
 import * as ImagePicker from "expo-image-picker";
@@ -33,6 +33,7 @@ export default function SignUpScreen() {
   const [step, setStep] = useState<SignUpStep>("account");
   const [profileImageUri, setProfileImageUri] = useState<string>();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isResending, setIsResending] = useState(false);
   const [formError, setFormError] = useState<string>();
   const [errors, setErrors] = useState<Record<string, string | undefined>>({});
 
@@ -129,12 +130,17 @@ export default function SignUpScreen() {
   }
 
   async function handleResend() {
+    if (isResending) return;
+
     setFormError(undefined);
+    setIsResending(true);
     try {
       const result = await signUp.verifications.sendEmailCode();
       if (result.error) setFormError(getAuthError(result.error));
     } catch (error) {
       setFormError(getAuthError(error));
+    } finally {
+      setIsResending(false);
     }
   }
 
@@ -173,8 +179,15 @@ export default function SignUpScreen() {
               onPress={handleVerify}
               title="Verify email"
             />
-            <Pressable className="items-center py-2" onPress={handleResend}>
-              <Text className="auth-link">Resend code</Text>
+            <Pressable
+              accessibilityState={{ busy: isResending, disabled: isResending }}
+              className="items-center py-2"
+              disabled={isResending}
+              onPress={handleResend}
+            >
+              <Text className="auth-link">
+                {isResending ? "Sending..." : "Resend code"}
+              </Text>
             </Pressable>
             <Pressable
               className="items-center py-2"

@@ -2,14 +2,14 @@ import ListHeading from "@/components/listHeading";
 import SubscriptionCard from "@/components/subscriptionCard";
 import UpcomingSubCard from "@/components/upcomingSubCard";
 import {
-  HOME_BALANCE,
-  HOME_SUBSCRIPTIONS,
-  HOME_USER,
-  UPCOMING_SUBSCRIPTIONS,
+    HOME_BALANCE,
+    HOME_SUBSCRIPTIONS,
+    UPCOMING_SUBSCRIPTIONS,
 } from "@/constants/data";
 import { icons } from "@/constants/icons";
 import images from "@/constants/images";
 import { formatCurrency } from "@/lib/utils";
+import { useUser } from "@clerk/expo";
 import dayjs from "dayjs";
 import { styled } from "nativewind";
 import React from "react";
@@ -18,9 +18,15 @@ import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 const SafeAreaView = styled(RNSafeAreaView);
 
 export default function App() {
+  const { user } = useUser();
   const [expandedCardId, setExpandedCardId] = React.useState<string | null>(
     null,
   );
+  const displayName =
+    user?.fullName ||
+    user?.firstName ||
+    user?.emailAddresses[0]?.emailAddress ||
+    "User";
   return (
     <SafeAreaView className="flex-1 bg-background p-5">
       <FlatList
@@ -28,8 +34,13 @@ export default function App() {
           <>
             <View className="home-header">
               <View className="home-user">
-                <Image source={images.avatar} className="home-avatar" />
-                <Text className="home-user-name">{HOME_USER.name}</Text>
+                <Image
+                  source={
+                    user?.imageUrl ? { uri: user.imageUrl } : images.avatar
+                  }
+                  className="home-avatar"
+                />
+                <Text className="home-user-name">{displayName}</Text>
               </View>
 
               <Image source={icons.add} className="home-add-icon" />

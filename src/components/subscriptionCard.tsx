@@ -62,7 +62,7 @@ const SubscriptionCard = ({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {paymentMethod?.trim()}
+                  {paymentMethod?.trim() || "Not provided"}
                 </Text>
               </View>
 
@@ -73,7 +73,7 @@ const SubscriptionCard = ({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {category?.trim() || plan?.trim()}
+                  {category?.trim() || plan?.trim() || "Not provided"}
                 </Text>
               </View>
 
@@ -84,18 +84,18 @@ const SubscriptionCard = ({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {startDate ? formatSubscriptionDateTime(startDate) : ""}
+                  {formatSubscriptionDateTime(startDate)}
                 </Text>
               </View>
 
               <View className="sub-row-copy">
-                <Text className="sub-label">Renewal data:</Text>
+                <Text className="sub-label">Renewal date:</Text>
                 <Text
                   className="sub-value"
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {renewalDate ? formatSubscriptionDateTime(renewalDate) : ""}
+                  {formatSubscriptionDateTime(renewalDate)}
                 </Text>
               </View>
 
@@ -106,7 +106,9 @@ const SubscriptionCard = ({
                   numberOfLines={1}
                   ellipsizeMode="tail"
                 >
-                  {status ? formatStatusLabel(status) : ""}
+                  {status?.trim()
+                    ? formatStatusLabel(status.trim())
+                    : "Not provided"}
                 </Text>
               </View>
             </View>

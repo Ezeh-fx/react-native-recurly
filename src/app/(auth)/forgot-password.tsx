@@ -11,6 +11,7 @@ import {
   validateEmail,
   validatePassword,
 } from "@/lib/auth";
+import { posthog } from "@/lib/posthog";
 import { useSignIn } from "@clerk/expo";
 import { Link } from "expo-router";
 import { useState } from "react";
@@ -72,7 +73,10 @@ export default function ForgotPasswordScreen() {
         password,
       });
       if (result.error) setFormError(getAuthError(result.error));
-      else await signIn.finalize();
+      else {
+        await signIn.finalize();
+        posthog?.capture("password_reset_completed");
+      }
     } catch (error) {
       setFormError(getAuthError(error));
     } finally {

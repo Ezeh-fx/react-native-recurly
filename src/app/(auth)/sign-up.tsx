@@ -13,6 +13,7 @@ import {
     validateEmail,
     validatePassword,
 } from "@/lib/auth";
+import { posthog } from "@/lib/posthog";
 import { useClerk, useSignUp } from "@clerk/expo";
 import * as ImagePicker from "expo-image-picker";
 import { Link } from "expo-router";
@@ -79,7 +80,7 @@ export default function SignUpScreen() {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
-      allowsEditing: true,
+      allowsEditing: false,
       aspect: [1, 1],
       quality: 0.8,
     });
@@ -112,6 +113,7 @@ export default function SignUpScreen() {
         setFormError(getAuthError(finalized.error));
         return;
       }
+      posthog?.capture("account_registered");
 
       if (profileImageUri) {
         const user = clerk.session?.user ?? clerk.user;

@@ -8,6 +8,7 @@ import {
 } from "@/constants/data";
 import { icons } from "@/constants/icons";
 import images from "@/constants/images";
+import { posthog } from "@/lib/posthog";
 import { formatCurrency } from "@/lib/utils";
 import { useUser } from "@clerk/expo";
 import dayjs from "dayjs";
@@ -84,11 +85,14 @@ export default function App() {
           <SubscriptionCard
             {...item}
             expanded={expandedCardId === item.id}
-            onPress={() =>
+            onPress={() => {
+              if (expandedCardId !== item.id) {
+                posthog?.capture("subscription_card_expanded");
+              }
               setExpandedCardId((currentId) =>
                 currentId === item.id ? null : item.id,
-              )
-            }
+              );
+            }}
           />
         )}
         extraData={expandedCardId}

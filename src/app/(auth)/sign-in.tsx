@@ -7,6 +7,7 @@ import {
   PasswordToggle,
 } from "@/components/auth";
 import { getAuthError, validateEmail, validatePassword } from "@/lib/auth";
+import { posthog } from "@/lib/posthog";
 import { useSignIn } from "@clerk/expo";
 import { Link, type Href } from "expo-router";
 import { useState } from "react";
@@ -39,7 +40,10 @@ export default function SignInScreen() {
         password,
       });
       if (result.error) setFormError(getAuthError(result.error));
-      else await signIn.finalize();
+      else {
+        await signIn.finalize();
+        posthog?.capture("sign_in_completed");
+      }
     } catch (error) {
       setFormError(getAuthError(error));
     } finally {

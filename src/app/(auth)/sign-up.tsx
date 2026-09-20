@@ -1,17 +1,17 @@
 import {
-    AuthBrand,
-    AuthButton,
-    AuthField,
-    AuthFormError,
-    AuthShell,
-    PasswordToggle,
+  AuthBrand,
+  AuthButton,
+  AuthField,
+  AuthFormError,
+  AuthShell,
+  PasswordToggle,
 } from "@/components/auth";
 import {
-    getAuthError,
-    validateCode,
-    validateConfirmation,
-    validateEmail,
-    validatePassword,
+  getAuthError,
+  validateCode,
+  validateConfirmation,
+  validateEmail,
+  validatePassword,
 } from "@/lib/auth";
 import { posthog } from "@/lib/posthog";
 import { useClerk, useSignUp } from "@clerk/expo";
@@ -80,7 +80,7 @@ export default function SignUpScreen() {
 
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
-      allowsEditing: false,
+      allowsEditing: true,
       aspect: [1, 1],
       quality: 0.8,
     });

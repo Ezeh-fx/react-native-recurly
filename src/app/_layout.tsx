@@ -1,10 +1,10 @@
+import { posthog } from "@/lib/posthog";
 import { ClerkProvider, useAuth, useUser } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
 import { useFonts } from "expo-font";
 import { SplashScreen, Stack } from "expo-router";
 import { PostHogProvider } from "posthog-react-native";
 import { useEffect } from "react";
-import { posthog } from "@/lib/posthog";
 import "../../global.css";
 
 SplashScreen.preventAutoHideAsync();
@@ -28,7 +28,16 @@ export default function RootLayout() {
 
   return (
     <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      {posthog ? <PostHogProvider client={posthog}>{content}</PostHogProvider> : content}
+      {posthog ? (
+        <PostHogProvider
+          client={posthog}
+          autocapture={{ captureScreens: false }}
+        >
+          {content}
+        </PostHogProvider>
+      ) : (
+        content
+      )}
     </ClerkProvider>
   );
 }

@@ -1,18 +1,19 @@
 import {
-    AuthBrand,
-    AuthButton,
-    AuthField,
-    AuthFormError,
-    AuthShell,
-    PasswordToggle,
+  AuthBrand,
+  AuthButton,
+  AuthField,
+  AuthFormError,
+  AuthShell,
+  PasswordToggle,
 } from "@/components/auth";
 import {
-    getAuthError,
-    validateCode,
-    validateConfirmation,
-    validateEmail,
-    validatePassword,
+  getAuthError,
+  validateCode,
+  validateConfirmation,
+  validateEmail,
+  validatePassword,
 } from "@/lib/auth";
+import { posthog } from "@/lib/posthog";
 import { useClerk, useSignUp } from "@clerk/expo";
 import * as ImagePicker from "expo-image-picker";
 import { Link } from "expo-router";
@@ -112,6 +113,7 @@ export default function SignUpScreen() {
         setFormError(getAuthError(finalized.error));
         return;
       }
+      posthog?.capture("account_registered");
 
       if (profileImageUri) {
         const user = clerk.session?.user ?? clerk.user;

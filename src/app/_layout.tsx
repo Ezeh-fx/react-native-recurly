@@ -2,7 +2,7 @@ import { posthog } from "@/lib/posthog";
 import { ClerkProvider, useAuth, useUser } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
 import { useFonts } from "expo-font";
-import { SplashScreen, Stack } from "expo-router";
+import { Redirect, SplashScreen, Stack } from "expo-router";
 import { PostHogProvider } from "posthog-react-native";
 import { useEffect } from "react";
 import "../../global.css";
@@ -67,5 +67,12 @@ function RootContent({ fontsReady }: { fontsReady: boolean }) {
 
   if (!fontsReady || !authLoaded) return null;
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  if (user) return <Redirect href="/(tabs)" />;
+
+  return (
+    <Stack
+      initialRouteName="onboarding"
+      screenOptions={{ headerShown: false }}
+    />
+  );
 }

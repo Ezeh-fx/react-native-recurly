@@ -1,16 +1,15 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
+import { Pressable, Text, View } from "react-native";
 
-const ListHeading = ({ title }: ListHeadingProps) => {
+const ListHeading = ({ title, onPress }: ListHeadingProps) => {
   return (
     <View className="list-head">
       <Text className="list-title">{title}</Text>
 
-      <TouchableOpacity className="list-action">
+      <Pressable className="list-action" onPress={onPress} disabled={!onPress}>
         <Text className="list-action-text">View All</Text>
-      </TouchableOpacity>
+      </Pressable>
     </View>
-  )
-}
+  );
+};
 
-export default ListHeading
+export default ListHeading;

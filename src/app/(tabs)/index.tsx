@@ -1,20 +1,19 @@
+import CreateSubscriptionModal from "@/components/CreateSubscriptionModal";
 import ListHeading from "@/components/listHeading";
+import { useSubscriptions } from "@/components/subscription-context";
 import SubscriptionCard from "@/components/subscriptionCard";
 import UpcomingSubCard from "@/components/upcomingSubCard";
-import {
-    HOME_BALANCE,
-    HOME_SUBSCRIPTIONS,
-    UPCOMING_SUBSCRIPTIONS,
-} from "@/constants/data";
+import { HOME_BALANCE, UPCOMING_SUBSCRIPTIONS } from "@/constants/data";
 import { icons } from "@/constants/icons";
 import images from "@/constants/images";
 import { posthog } from "@/lib/posthog";
 import { formatCurrency } from "@/lib/utils";
 import { useUser } from "@clerk/expo";
 import dayjs from "dayjs";
+import { useRouter } from "expo-router";
 import { styled } from "nativewind";
 import React from "react";
-import { FlatList, Image, Text, View } from "react-native";
+import { FlatList, Image, Pressable, Text, View } from "react-native";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 const SafeAreaView = styled(RNSafeAreaView);
 
@@ -23,6 +22,9 @@ export default function App() {
   const [expandedCardId, setExpandedCardId] = React.useState<string | null>(
     null,
   );
+  const [isCreateModalVisible, setIsCreateModalVisible] = React.useState(false);
+  const router = useRouter();
+  const { subscriptions, addSubscription } = useSubscriptions();
   const displayName =
     user?.fullName ||
     user?.firstName ||
@@ -44,7 +46,14 @@ export default function App() {
                 <Text className="home-user-name">{displayName}</Text>
               </View>
 
-              <Image source={icons.add} className="home-add-icon" />
+              <Pressable
+                accessibilityLabel="Add subscription"
+                accessibilityRole="button"
+                hitSlop={8}
+                onPress={() => setIsCreateModalVisible(true)}
+              >
+                <Image source={icons.add} className="home-add-icon" />
+              </Pressable>
             </View>
 
             <View className="home-balance-card">
@@ -76,10 +85,13 @@ export default function App() {
               />
             </View>
 
-            <ListHeading title="All Subscriptions" />
+            <ListHeading
+              title="All Subscriptions"
+              onPress={() => router.push("/(tabs)/subscription")}
+            />
           </>
         )}
-        data={HOME_SUBSCRIPTIONS}
+        data={subscriptions}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
           <SubscriptionCard
@@ -102,6 +114,11 @@ export default function App() {
           <Text className="home-empty-state">No subscriptions yet</Text>
         }
         contentContainerClassName="pb-20"
+      />
+      <CreateSubscriptionModal
+        visible={isCreateModalVisible}
+        onClose={() => setIsCreateModalVisible(false)}
+        onSubmit={addSubscription}
       />
     </SafeAreaView>
   );

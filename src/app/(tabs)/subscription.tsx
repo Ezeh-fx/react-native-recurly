@@ -1,5 +1,5 @@
+import { useSubscriptions } from "@/components/subscription-context";
 import SubscriptionCard from "@/components/subscriptionCard";
-import { HOME_SUBSCRIPTIONS } from "@/constants/data";
 import { styled } from "nativewind";
 import React from "react";
 import {
@@ -18,8 +18,9 @@ const Subscription = () => {
   const [expandedCardId, setExpandedCardId] = React.useState<string | null>(
     null,
   );
+  const { subscriptions } = useSubscriptions();
   const normalizedQuery = searchQuery.trim().toLowerCase();
-  const filteredSubscriptions = HOME_SUBSCRIPTIONS.filter((subscription) =>
+  const filteredSubscriptions = subscriptions.filter((subscription) =>
     [
       subscription.name,
       subscription.plan,

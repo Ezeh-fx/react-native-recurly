@@ -1,4 +1,5 @@
 import { icons } from "@/constants/icons";
+import { posthog } from "@/lib/posthog";
 import clsx from "clsx";
 import dayjs from "dayjs";
 import { useState } from "react";
@@ -59,7 +60,7 @@ const CreateSubscriptionModal = ({
   const [price, setPrice] = useState("");
   const [frequency, setFrequency] = useState<Frequency>("Monthly");
   const [category, setCategory] = useState<Category>("Other");
-    const [formError, setFormError] = useState<string>();
+  const [formError, setFormError] = useState<string>();
 
   // Improved price validation
   const isValidPrice = () => {
@@ -82,13 +83,12 @@ const CreateSubscriptionModal = ({
     return true;
   };
 
-  const isValidForm = name.trim() !== "" && isValidPrice();
-
   const handleSubmit = () => {
-    if (!isValidForm) {
+    if (name.trim() === "") {
       setFormError("Please fill out all fields correctly");
       return;
-    };
+    }
+    if (!isValidPrice()) return;
 
     const priceValue = Number(price.trim());
     const now = dayjs();
@@ -112,12 +112,12 @@ const CreateSubscriptionModal = ({
 
     onSubmit(newSubscription);
 
-    // posthog.capture('subscription_created', {
-    //   subscription_name: name.trim(),
-    //   subscription_price: priceValue,
-    //   subscription_frequency: frequency,
-    //   subscription_category: category,
-    // })
+    posthog?.capture("subscription_created", {
+      subscription_name: name.trim(),
+      subscription_price: priceValue,
+      subscription_frequency: frequency,
+      subscription_category: category,
+    });
 
     resetForm();
     onClose();
@@ -252,16 +252,20 @@ const CreateSubscriptionModal = ({
                 </View>
               </View>
 
+              {formError ? (
+                <Text className="auth-error">{formError}</Text>
+              ) : null}
+
               <Pressable
-              accessibilityRole="button"
-              className={clsx(
-                "auth-button",
-                (!name.trim() || !price.trim()) && "auth-button-disabled",
-              )}
-              onPress={handleSubmit}
-            >
-              <Text className="auth-button-text">Create Subscription</Text>
-            </Pressable>
+                accessibilityRole="button"
+                className={clsx(
+                  "auth-button",
+                  (!name.trim() || !price.trim()) && "auth-button-disabled",
+                )}
+                onPress={handleSubmit}
+              >
+                <Text className="auth-button-text">Create Subscription</Text>
+              </Pressable>
             </ScrollView>
           </Pressable>
         </Pressable>
